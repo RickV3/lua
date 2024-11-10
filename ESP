@@ -11,27 +11,27 @@ local function removeHighlights(player)
     end
 end
 
-local function highlightPlayer(player)
-    removeHighlights(player)
+local function addHighlight(player)
     local character = player.Character or player.CharacterAdded:Wait()
     local highlight = Instance.new("Highlight")
     highlight.Parent = character
-    print("ESP updated")
+    print("added highlight")
 end
 
-local function highlightAllPlayers()
+local function refreshHighlights()
     for _, player in ipairs(Players:GetPlayers()) do
-        highlightPlayer(player)
+        removeHighlights(player)
+        addHighlight(player)
     end
 end
 
--- Highlight all players at the start
-highlightAllPlayers()
+-- Refresh highlights for all players once at the start
+refreshHighlights()
 
--- Also highlight players that join after the script runs
+-- Also handle players that join after the script runs
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function()
-        highlightPlayer(player)
+        removeHighlights(player)
+        addHighlight(player)
     end)
 end)
-
