@@ -1,0 +1,11 @@
+local scriptUrl = "https://raw.githubusercontent.com/RickV3/lua/refs/heads/main/ESP"
+local scriptContent = game:HttpGet(scriptUrl)
+
+local function runScript()
+    loadstring(scriptContent)()
+end
+
+while true do
+    wait(1)
+    runScript()
+end
