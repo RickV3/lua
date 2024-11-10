@@ -15,13 +15,13 @@ local function addHighlight(player)
     local character = player.Character or player.CharacterAdded:Wait()
     local highlight = Instance.new("Highlight")
     highlight.Parent = character
-    print("added highlight")
 end
 
 local function refreshHighlights()
     for _, player in ipairs(Players:GetPlayers()) do
         removeHighlights(player)
         addHighlight(player)
+        print("Highlighted player: " .. player.Name)
     end
 end
 
@@ -33,5 +33,6 @@ Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function()
         removeHighlights(player)
         addHighlight(player)
+        print("Highlighted new player: " .. player.Name)
     end)
 end)
