@@ -1,38 +1,45 @@
 local Players = game:GetService("Players")
 
-local function removeHighlights(player)
-    local character = player.Character
-    if character then
+local function refreshHighlights()
+    for _, player in ipairs(Players:GetPlayers()) do
+        local character = player.Character or player.CharacterAdded:Wait()
+
+        -- Remove existing highlights
         for _, child in pairs(character:GetChildren()) do
             if child:IsA("Highlight") then
                 child:Destroy()
             end
         end
-    end
-end
 
-local function addHighlight(player)
-    local character = player.Character or player.CharacterAdded:Wait()
-    local highlight = Instance.new("Highlight")
-    highlight.Parent = character
-end
+        -- Add new highlight
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = character
 
-local function refreshHighlights()
-    for _, player in ipairs(Players:GetPlayers()) do
-        removeHighlights(player)
-        addHighlight(player)
+        -- Log the highlighted player for debugging
         print("Highlighted player: " .. player.Name)
     end
 end
 
--- Refresh highlights for all players once at the start
+-- Refresh highlights for all players at the start
 refreshHighlights()
 
--- Also handle players that join after the script runs
+-- Handle new players joining after the script runs
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function()
-        removeHighlights(player)
-        addHighlight(player)
+        local character = player.Character or player.CharacterAdded:Wait()
+
+        -- Remove existing highlights
+        for _, child in pairs(character:GetChildren()) do
+            if child:IsA("Highlight") then
+                child:Destroy()
+            end
+        end
+
+        -- Add new highlight
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = character
+
+        -- Log the highlighted player for debugging
         print("Highlighted new player: " .. player.Name)
     end)
 end)
