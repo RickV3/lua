@@ -16,6 +16,7 @@ local function highlightPlayer(player)
     local character = player.Character or player.CharacterAdded:Wait()
     local highlight = Instance.new("Highlight")
     highlight.Parent = character
+    print("ESP updated")
 end
 
 local function highlightAllPlayers()
@@ -33,4 +34,4 @@ Players.PlayerAdded:Connect(function(player)
         highlightPlayer(player)
     end)
 end)
-print("ESP updated")
+
