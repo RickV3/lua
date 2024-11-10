@@ -1,0 +1,137 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+screenGui.Name = "TeleportGui"
+screenGui.ResetOnSpawn = false -- Ensure the GUI does not reset on respawn
+
+-- Create Frame for GUI elements
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BorderSizePixel = 0
+frame.BackgroundTransparency = 0.2
+
+-- Make the Frame Draggable
+frame.Active = true
+frame.Draggable = true
+
+-- Create Close Button
+local closeButton = Instance.new("TextButton", frame)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.Text = "X"
+closeButton.TextScaled = true
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.BorderSizePixel = 0
+closeButton.ZIndex = 999
+
+-- Create TextBox for player name input
+local textBox = Instance.new("TextBox", frame)
+textBox.Size = UDim2.new(0, 250, 0, 50)
+textBox.Position = UDim2.new(0.5, -125, 0.2, -25)
+textBox.PlaceholderText = "Enter player name"
+textBox.TextScaled = true
+textBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.BorderSizePixel = 0
+
+-- Create TP Button
+local tpButton = Instance.new("TextButton", frame)
+tpButton.Size = UDim2.new(0, 100, 0, 50)
+tpButton.Position = UDim2.new(0.25, -50, 0.6, -25)
+tpButton.Text = "TP"
+tpButton.TextScaled = true
+tpButton.BackgroundColor3 = Color3.fromRGB(0, 153, 0)
+tpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpButton.BorderSizePixel = 0
+
+-- Create TTP Button
+local ttpButton = Instance.new("TextButton", frame)
+ttpButton.Size = UDim2.new(0, 100, 0, 50)
+ttpButton.Position = UDim2.new(0.75, -50, 0.6, -25)
+ttpButton.Text = "TTP"
+ttpButton.TextScaled = true
+ttpButton.BackgroundColor3 = Color3.fromRGB(0, 102, 204)
+ttpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ttpButton.BorderSizePixel = 0
+
+-- Function to find player by partial name
+local function findPlayerByName(partialName)
+    partialName = partialName:lower()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr.Name:lower():sub(1, #partialName) == partialName then
+            return plr
+        end
+    end
+    return nil
+end
+
+-- Function to set CanCollide for all parts in a character
+local function setCanCollide(character, canCollide)
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = canCollide
+        end
+    end
+end
+
+-- Teleport function
+local function teleportToPlayer(targetPlayerName, tween)
+    local targetPlayer = findPlayerByName(targetPlayerName)
+    if targetPlayer then
+        local targetCharacter = targetPlayer.Character
+        if targetCharacter then
+            local targetPosition = targetCharacter:FindFirstChild("HumanoidRootPart").Position
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            local originalAnchoredState = humanoidRootPart.Anchored
+
+            -- Anchor the character during tween and disable collisions
+            humanoidRootPart.Anchored = true
+            setCanCollide(character, false)
+
+            if tween then
+                local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+                local goal = {CFrame = CFrame.new(targetPosition)} -- Use CFrame to avoid rotation issues
+                local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+                tween:Play()
+                tween.Completed:Connect(function()
+                    -- Unanchor the character and re-enable collisions after tween
+                    humanoidRootPart.Anchored = originalAnchoredState
+                    setCanCollide(character, true)
+                    print("Tween teleport complete.")
+                end)
+            else
+                humanoidRootPart.CFrame = CFrame.new(targetPosition)
+                -- Unanchor the character and re-enable collisions after teleport
+                humanoidRootPart.Anchored = originalAnchoredState
+                setCanCollide(character, true)
+                print("Teleport complete.")
+            end
+        else
+            print("Target character not found!")
+        end
+    else
+        print("Player not found!")
+    end
+end
+
+-- TP Button click event
+tpButton.MouseButton1Click:Connect(function()
+    teleportToPlayer(textBox.Text, false)
+end)
+
+-- TTP Button click event
+ttpButton.MouseButton1Click:Connect(function()
+    teleportToPlayer(textBox.Text, true)
+end)
+
+-- Close Button click event
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
