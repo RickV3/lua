@@ -1,0 +1,44 @@
+local TweenService = game:GetService("TweenService")
+local Gui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner") -- This is the correct way to add rounded corners
+
+Gui.Parent = game.CoreGui
+Frame.Parent = Gui
+Frame.BackgroundColor3 = Color3.new(0, 0, 0)
+Frame.BackgroundTransparency = 0.5
+Frame.Position = UDim2.new(0.5, -100, 0.1, -50)
+Frame.Size = UDim2.new(0, 200, 0, 100)
+Frame.Visible = false
+Frame.BorderSizePixel = 0
+Frame.ClipsDescendants = true
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+UICorner.Parent = Frame
+UICorner.CornerRadius = UDim.new(0, 15) -- Set the corner radius
+
+local TextLabel = Instance.new("TextLabel")
+TextLabel.Parent = Frame
+TextLabel.Size = UDim2.new(1, 0, 1, 0)
+TextLabel.Text = "Squirrel Injected"
+TextLabel.TextColor3 = Color3.new(1, 1, 1)
+TextLabel.BackgroundTransparency = 1
+TextLabel.Font = Enum.Font.SourceSansBold
+TextLabel.TextSize = 24
+
+local function showGui()
+    Frame.Visible = true
+    local showTween = TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -100, 0.3, -50)})
+    showTween:Play()
+    showTween.Completed:Connect(function()
+        wait(3)
+        local hideTween = TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.In), {Position = UDim2.new(0.5, -100, 0.1, -50)})
+        hideTween:Play()
+        hideTween.Completed:Connect(function()
+            Gui:Destroy()
+        end)
+    end)
+end
+
+showGui()
+print("finished")
