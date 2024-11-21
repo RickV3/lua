@@ -1,9 +1,11 @@
 local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 local Gui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local UICorner = Instance.new("UICorner") -- This is the correct way to add rounded corners
 
-Gui.Parent = game.CoreGui
+Gui.Parent = player:WaitForChild("PlayerGui") -- Change here
 Frame.Parent = Gui
 Frame.BackgroundColor3 = Color3.new(0, 0, 0)
 Frame.BackgroundTransparency = 0.5
